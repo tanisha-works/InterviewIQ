@@ -1,5 +1,38 @@
-node_modules/
-dist/
+# Environment variables and secrets
 .env
 .env.*
 !.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# Python virtual environments
+venv/
+.venv/
+backend/venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# User uploaded files
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Node dependencies and builds
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
