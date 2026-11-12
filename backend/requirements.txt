@@ -3,6 +3,7 @@ uvicorn[standard]
 python-multipart
 sqlalchemy
 psycopg2-binary
+psycopg[binary]
 alembic
 pydantic-settings
 pwdlib[argon2]
