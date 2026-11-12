@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     refresh_token_days: int = Field(default=30, ge=1, le=90)
     auth_cookie_secure: bool = True
     auth_cookie_samesite: Literal["strict", "lax", "none"] = "strict"
+    auth_cookie_path: str = Field(default="/auth", pattern=r"^/.*")
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

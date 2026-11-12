@@ -138,6 +138,34 @@ def test_logout_revokes_session_and_clears_cookies(client):
     assert client.cookies.get("interviewiq_refresh") is None
 
 
+def test_refresh_cookie_uses_configured_path_on_set_and_clear(client, monkeypatch):
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "auth_cookie_path", "/api/auth")
+    signup_response = signup(client, email="cookie-path@example.com")
+    assert signup_response.status_code == 201
+
+    set_cookies = signup_response.headers.get_list("set-cookie")
+    refresh_set = next(header for header in set_cookies if header.startswith("interviewiq_refresh="))
+    csrf_set = next(header for header in set_cookies if header.startswith("interviewiq_csrf="))
+    assert "Path=/api/auth" in refresh_set
+    assert "Path=/" in csrf_set and "Path=/api/auth" not in csrf_set
+
+    csrf = client.cookies.get("interviewiq_csrf")
+    refresh_value = signup_response.cookies["interviewiq_refresh"]
+    logout_response = client.post(
+        "/auth/logout",
+        cookies={"interviewiq_refresh": refresh_value},
+        headers={"Origin": "http://localhost:5173", "X-CSRF-Token": csrf},
+    )
+    assert logout_response.status_code == 204
+    clear_cookies = logout_response.headers.get_list("set-cookie")
+    refresh_clear = next(header for header in clear_cookies if header.startswith("interviewiq_refresh="))
+    csrf_clear = next(header for header in clear_cookies if header.startswith("interviewiq_csrf="))
+    assert "Path=/api/auth" in refresh_clear
+    assert "Path=/" in csrf_clear and "Path=/api/auth" not in csrf_clear
+
+
 def test_other_user_cannot_access_interview_or_evaluation(client):
     owner = signup(client, "Owner", "owner@example.com").json()
     owner_headers = {"Authorization": f"Bearer {owner['access_token']}"}

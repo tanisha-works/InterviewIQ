@@ -19,7 +19,6 @@ from app.services.auth_service import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 REFRESH_COOKIE = "interviewiq_refresh"
 CSRF_COOKIE = "interviewiq_csrf"
-AUTH_COOKIE_PATH = "/auth"
 
 
 def _validate_origin(request: Request) -> None:
@@ -37,7 +36,7 @@ def _set_auth_cookies(response: Response, refresh_token: str, csrf_token: str) -
         httponly=True,
         secure=settings.auth_cookie_secure,
         samesite=settings.auth_cookie_samesite,
-        path=AUTH_COOKIE_PATH,
+        path=settings.auth_cookie_path,
     )
     response.set_cookie(
         CSRF_COOKIE,
@@ -51,7 +50,7 @@ def _set_auth_cookies(response: Response, refresh_token: str, csrf_token: str) -
 
 
 def _clear_auth_cookies(response: Response) -> None:
-    response.delete_cookie(REFRESH_COOKIE, path=AUTH_COOKIE_PATH, secure=settings.auth_cookie_secure, httponly=True,
+    response.delete_cookie(REFRESH_COOKIE, path=settings.auth_cookie_path, secure=settings.auth_cookie_secure, httponly=True,
                           samesite=settings.auth_cookie_samesite)
     response.delete_cookie(CSRF_COOKIE, path="/", secure=settings.auth_cookie_secure,
                           httponly=False, samesite=settings.auth_cookie_samesite)

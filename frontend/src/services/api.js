@@ -3,8 +3,10 @@ import axios from "axios";
 let accessToken = null;
 let refreshRequest = null;
 
+const rawApiUrl = (import.meta.env.VITE_API_URL || "").trim().replace(/\/+$/, "");
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "/api",
+  baseURL: rawApiUrl || "/api",
   timeout: 15000,
   headers: { Accept: "application/json" },
   withCredentials: true,
