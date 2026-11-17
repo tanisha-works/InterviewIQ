@@ -16,6 +16,8 @@ From the `backend` directory, run `python -m alembic upgrade head` to create the
 
 Review every generated migration before applying it, especially SQLite table rebuild operations. The authentication migration leaves legacy resources with `user_id = NULL`; those rows are preserved and are never assigned automatically. Revision `0003_session_options` adds non-null setup metadata with defaults to existing sessions without changing their owners, questions, or answers. Auth and session-option revisions are forward-only to avoid deleting account, session, or ownership data.
 
+Revision `0004_user_profile_photo` adds nullable photo bytes and content type to users; existing account records are preserved.
+
 Keep verified backups outside the repository and never commit local `.env` files or database backups.
 
 ## Authentication configuration

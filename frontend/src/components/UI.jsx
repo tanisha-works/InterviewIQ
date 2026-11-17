@@ -5,6 +5,13 @@ export function Button({ children, variant = "primary", size = "", className = "
   return <button className={`button button-${variant} ${size ? `button-${size}` : ""} ${className}`} {...props}>{children}</button>;
 }
 
+export function Avatar({ name, photo, className = "" }) {
+  if (photo) return <img className={`avatar ${className}`} src={photo} alt="Profile" />;
+  return <span className={`avatar avatar-fallback ${className}`} aria-label="Profile">
+    {name?.trim().charAt(0).toUpperCase() || "U"}
+  </span>;
+}
+
 export function Card({ children, className = "", ...props }) {
   return <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className={`card ${className}`} {...props}>{children}</motion.section>;
 }

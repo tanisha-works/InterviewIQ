@@ -43,7 +43,7 @@ def build_feedback(question: dict, audio: dict, nlp: dict, overall: float) -> li
     tips = []
     wpm = audio["wpm"]
     if 0 < wpm < 110:
-        tips.append(f"You spoke slowly ({wpm:.0f} WPM). Aim for 120-160 WPM.")
+        tips.append(f"You spoke slowly ({wpm:.0f} WPM). Aim for 110-160 WPM.")
     elif wpm > 160:
         tips.append(f"You spoke fast ({wpm:.0f} WPM). Slow down so key points land.")
 

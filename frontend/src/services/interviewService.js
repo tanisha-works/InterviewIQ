@@ -30,6 +30,6 @@ export const interviewService = {
     const extension = mimeType.includes("ogg") ? "ogg" : mimeType.includes("mp4") ? "mp4" : mimeType.includes("mpeg") ? "mp3" : "webm";
     body.append("question_id", questionId);
     body.append("audio", new File([audioBlob], `answer.${extension}`, { type: mimeType }));
-    return (await api.post(`/interview/${sessionId}/answer`, body)).data;
+    return (await api.post(`/interview/${sessionId}/answer`, body, { timeout: 180000 })).data;
   },
 };

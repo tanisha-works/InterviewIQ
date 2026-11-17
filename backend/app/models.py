@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, Boolean, Column, DateTime, Float, ForeignKey, Integer, LargeBinary, String, Text
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -55,6 +55,8 @@ class User(Base):
     name = Column(String(120), nullable=False)
     email = Column(String(320), nullable=False, unique=True, index=True)
     password_hash = Column(String(255), nullable=False)
+    profile_photo = Column(LargeBinary, nullable=True)
+    profile_photo_content_type = Column(String(16), nullable=True)
     is_active = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
     auth_sessions = relationship("AuthSession", back_populates="user", cascade="all, delete-orphan")

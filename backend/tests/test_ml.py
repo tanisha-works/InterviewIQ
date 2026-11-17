@@ -14,7 +14,17 @@ def test_audio_features():
     words = [{"word": "a", "start": 0.0, "end": 0.4}, {"word": "b", "start": 0.5, "end": 0.9},
              {"word": "c", "start": 2.5, "end": 3.0}]
     f = compute_audio_features(words, 3.0)
-    assert f["pause_count"] == 1 and f["longest_pause_sec"] == 1.6 and f["wpm"] == 60.0
+    assert f["pause_count"] == 1 and f["longest_pause_sec"] == 1.6
+    assert f["wpm"] == 128.6 and f["pause_ratio"] == 0.533
+
+
+def test_audio_features_ignore_overlapping_word_timestamps():
+    words = [{"word": "second", "start": 0.8, "end": 1.2},
+             {"word": "first", "start": 0.0, "end": 0.9}]
+    features = compute_audio_features(words, 1.2)
+    assert features["word_count"] == 2
+    assert features["pause_count"] == 0
+    assert features["wpm"] == 100.0
 
 
 def test_star_detection():

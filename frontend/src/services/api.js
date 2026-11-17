@@ -32,7 +32,9 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const detail = error.response?.data?.detail;
-    const message = typeof detail === "string"
+    const message = error.code === "ECONNABORTED" || error.code === "ETIMEDOUT"
+      ? "The request timed out. Please try again."
+      : typeof detail === "string"
       ? detail
       : Array.isArray(detail)
         ? detail.map((item) => item.msg || item.message || "Invalid request").join("; ")

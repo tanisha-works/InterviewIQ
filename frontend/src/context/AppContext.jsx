@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { authService } from "../services/authService";
+import { userService } from "../services/userService";
 import { setAccessToken } from "../services/api";
 
 const AppContext = createContext(null);
@@ -34,7 +35,11 @@ export function AppProvider({ children }) {
   const [resume, setResume] = useState(null);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [cacheUserId, setCacheUserId] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [profilePhotoError, setProfilePhotoError] = useState("");
+  const [profilePhotoRevision, setProfilePhotoRevision] = useState(0);
   const userIdRef = useRef(null);
+  const refreshProfilePhoto = useCallback(() => setProfilePhotoRevision((revision) => revision + 1), []);
 
   function setUser(nextUser) {
     const previousId = userIdRef.current;
@@ -95,12 +100,36 @@ export function AppProvider({ children }) {
       setResume(null);
       setConfig(DEFAULT_CONFIG);
       setCacheUserId(null);
+      setProfilePhoto(null);
       return;
     }
     setCacheUserId(user.id);
     setResume(readJson(`interviewiq-user-${user.id}-resume`, null));
     setConfig(readJson(`interviewiq-user-${user.id}-config`, DEFAULT_CONFIG));
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!user) return undefined;
+    let active = true;
+    setProfilePhotoError("");
+    userService.getProfilePhoto()
+      .then((response) => {
+        const nextPhoto = response.status === 200 ? URL.createObjectURL(response.data) : null;
+        if (!active) {
+          if (nextPhoto) URL.revokeObjectURL(nextPhoto);
+          return;
+        }
+        setProfilePhoto(nextPhoto);
+      })
+      .catch((error) => {
+        if (active) setProfilePhotoError(error.message);
+      });
+    return () => { active = false; };
+  }, [user?.id, profilePhotoRevision]);
+
+  useEffect(() => () => {
+    if (profilePhoto) URL.revokeObjectURL(profilePhoto);
+  }, [profilePhoto]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -120,7 +149,8 @@ export function AppProvider({ children }) {
 
   const value = useMemo(() => ({
     theme, setTheme, user, setUser, authLoading, logout, resume, setResume, config, setConfig,
-  }), [theme, user, authLoading, resume, config]);
+    profilePhoto, profilePhotoError, refreshProfilePhoto,
+  }), [theme, user, authLoading, resume, config, profilePhoto, profilePhotoError, refreshProfilePhoto]);
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
