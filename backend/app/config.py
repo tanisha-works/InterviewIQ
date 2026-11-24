@@ -6,8 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     database_url: str = "sqlite:///./interviewiq.db"
-    whisper_model: str = "base"
-    embedding_model: str = "all-MiniLM-L6-v2"
+    whisper_model: str = "tiny.en"
     upload_dir: str = "uploads"
     max_audio_mb: int = 25
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"

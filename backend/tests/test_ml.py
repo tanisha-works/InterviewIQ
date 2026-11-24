@@ -1,6 +1,6 @@
 from app.ml.audio_features import compute_audio_features
 from app.ml.concept_matcher import match_concepts
-from app.ml.nlp_evaluator import count_fillers, detect_star
+from app.ml.nlp_evaluator import count_fillers, detect_star, relevance
 from app.ml.scoring import compute_scores, pace_score
 from app.services.question_generator import build_question_set
 
@@ -30,6 +30,20 @@ def test_audio_features_ignore_overlapping_word_timestamps():
 def test_star_detection():
     text = "During my project I had to fix a bug. I built a script and as a result we reduced errors by 40%."
     assert detect_star(text)["score"] == 100.0
+
+
+def test_relevance_prefers_answer_matching_the_ideal_answer():
+    question = {
+        "question": "How does authentication differ from authorization?",
+        "ideal_answer": "Authentication verifies identity; authorization controls access to resources.",
+    }
+    relevant = relevance(
+        "Authentication verifies user identity, while authorization controls access to resources.",
+        question,
+    )
+    unrelated = relevance("I enjoy cooking dinner and playing outdoor sports.", question)
+
+    assert relevant[1] > unrelated[1]
 
 
 def test_concepts():

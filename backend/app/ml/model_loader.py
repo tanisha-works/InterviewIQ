@@ -12,13 +12,6 @@ def get_whisper():
 
 
 @lru_cache(maxsize=1)
-def get_embedder():
-    from sentence_transformers import SentenceTransformer
-
-    return SentenceTransformer(settings.embedding_model)
-
-
-@lru_cache(maxsize=1)
 def get_nlp():
     import spacy
 
@@ -30,5 +23,4 @@ def get_nlp():
 
 def load_all():
     get_whisper()
-    get_embedder()
     get_nlp()
